@@ -1,8 +1,29 @@
-use crypto_hash::{digest, Algorithm};
-pub trait Hasher {
-    fn input(&self) -> Vec<u8>;
+use digest::DynDigest;
 
-    fn hash(&self) -> Vec<u8> {
-        digest(Algorithm::SHA256, &self.input())
+pub trait Hasher {
+  
+    fn use_hasher(hasher: &mut dyn DynDigest, data: &[u8]) -> Box<[u8]> {
+        hasher.update(data);
+        hasher.finalize_reset()
     }
+
+    fn use_hasher_node(hasher: &mut dyn DynDigest, left: &[u8], right: &[u8]) -> Box<[u8]> {
+        hasher.update(left);
+        hasher.update(right);
+        hasher.finalize_reset()
+    }
+
+    
+    fn select_hasher(s: &str) -> Box<dyn DynDigest> {
+        match s {
+            //"md5" => Box::new(md5::Md5::default()),
+            //"sha1" => Box::new(sha1::Sha1::default()),
+            "sha224" => Box::new(sha2::Sha224::default()),
+            "sha256" => Box::new(sha2::Sha256::default()),
+            "sha384" => Box::new(sha2::Sha384::default()),
+            "sha512" => Box::new(sha2::Sha512::default()),
+            _ => unimplemented!("unsupported digest: {}", s),
+        }
+    }
+
 }
