@@ -54,4 +54,23 @@ impl Tree {
         
         Tree { leafs, data, height, arity, nodes, root }
     }
+
+    pub fn get_height(&self) -> usize {
+        self.height.clone()
+    }
+    pub fn get_data(&self) -> Vec<String> {
+        self.data.clone()
+    }
+    pub fn get_leafs(&self) -> Vec<Node> {
+        self.leafs.clone()
+    }
+    pub fn get_root(&self) -> Node {
+        let binding = self.root.clone();
+        let unwraped_root = binding.first().unwrap();
+        let deref_root = unwraped_root.clone();
+        deref_root
+    }
+    pub fn get_nodes(&self) -> BTreeMap<usize,Vec<Node>> {
+        self.nodes.clone()
+    }
 }

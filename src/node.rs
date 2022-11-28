@@ -32,8 +32,8 @@ impl Node {
     }
 
     pub fn get_string_value(&self) -> String {
-        let hash_value = self.string_hash.clone();
-        hash_value
+        self.string_hash.clone()
+        
     }
 }
 
