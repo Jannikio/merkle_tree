@@ -29,8 +29,8 @@ impl Tree {
         
         let mut above_level = height.clone();
         nodes.insert(above_level, leafs.clone());
+        let mut level = Vec::new();
         while above_level > 0 {
-            let mut level = Vec::new();
             let current_level = nodes.get(&above_level).unwrap();
             for single_node in (0..current_level.len()).step_by(2) {
                 let left = current_level.get(single_node).unwrap();
