@@ -13,24 +13,46 @@ pub struct Tree {
 }
 
 impl Tree {
-    pub fn new(data: Vec<String>, arity: usize) -> Tree {
-        let height_f = (data.len() as f64).log2();
+    pub fn new(data: Vec<String>, arity: usize) -> Tree { 
+        let length = data.len() / arity;
+        let height_f = (length as f64).log2();
         let height = if height_f - height_f.floor() > 0.0 
                             {
                                 (height_f + 1.0) as usize
                             } else {
                                 height_f as usize
                             };
+        if (data.len() % arity) > 0 {
+            panic!("not valide arity");
+        }
+          
+        let mut values = Vec::new();
+        let mut data_for_leafs = Vec::new();
+        let mut current_arity = 0;
+        for input in (0..data.len()).step_by(arity) {
+            while current_arity != arity {
+                let value = data.get(input + current_arity).unwrap();
+                let deref_value = value.clone();
+                values.push(deref_value);
+                current_arity += 1;
+            }
+            let concat_values = values.concat();
+            values.clear();
+            current_arity = 0;
+            data_for_leafs.push(concat_values);
+        }
+
         let mut leafs = Vec::new();
-        for input in data.clone() {
+        for input in data_for_leafs {
             let leaf = Node::create_leaf(input);
             leafs.push(leaf);
         }
         let mut nodes = BTreeMap::new();
-        
         let mut tree_level = height.clone();
         nodes.insert(tree_level, leafs.clone());
         let mut level = Vec::new();
+
+
         while tree_level > 0 {
             let current_level = nodes.get(&tree_level).unwrap();
             for single_node in (0..current_level.len()).step_by(2) {
