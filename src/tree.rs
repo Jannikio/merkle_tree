@@ -43,7 +43,7 @@ impl Tree {
         }
 
         let mut leafs = Vec::new();
-        for input in data_for_leafs {
+        for input in data_for_leafs.clone() {
             let leaf = Node::create_leaf(input);
             leafs.push(leaf);
         }
@@ -69,7 +69,7 @@ impl Tree {
         let ref_root = &*binding.get(&0).unwrap();
         let root = ref_root.first().unwrap().clone();
         
-        Tree { leafs, data, height, arity, nodes, root }
+        Tree { leafs, data: data_for_leafs , height, arity, nodes, root }
     }
 
     pub fn get_height(&self) -> usize {
@@ -86,5 +86,31 @@ impl Tree {
     }
     pub fn get_nodes(&self) -> BTreeMap<usize,Vec<Node>> {
         self.nodes.clone()
+    }
+
+    pub fn get_opening(&self, index_e: usize) -> Vec<Node> {
+        let mut index = index_e;
+        let mut level = self.height;
+        let mut opening = Vec::new();
+        let nodes_len = self.nodes.len();
+        if index_e > nodes_len  {
+            panic!("Not valid entry");
+        }
+        while level > 0 {
+            let nodes_opening = self.nodes.get(&level);
+            for nodes_level in nodes_opening {
+                if index % 2 == 0 {
+                    let value = nodes_level.get(index + 1).unwrap();
+                    index /= 2;
+                    opening.push(value.clone());
+                } else {
+                    let value = nodes_level.get(index - 1).unwrap();
+                    index /= 2;
+                    opening.push(value.clone());
+                } 
+            }
+            level -= 1;
+        }
+        opening
     }
 }
