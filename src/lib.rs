@@ -1,5 +1,3 @@
-//type NodeHasher = Vec<u8>;
-
 mod hasher;
 pub use crate::hasher::Hasher;
 mod node;
