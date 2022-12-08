@@ -5,20 +5,28 @@ use super::*;
 #[derive(Debug)]
 pub struct Tree {
     pub leafs: Vec<Node>,
+    pub inputs: Vec<String>,
     pub data: Vec<String>,
-    pub data_for_leafs: Vec<String>,
     pub height: usize,
     pub arity: usize,
-    pub nodes: BTreeMap<usize,Vec<Node>>,
-    pub root: Node
+    pub nodes: BTreeMap<usize,Vec<Node>>
 }
 
 impl Tree {
 
     /// Creates a new Tree with given values
-    pub fn new(data: Vec<String>, arity: usize) -> Tree { 
+    /// # Example
+    /// use merkletreelib::*;
+    /// let tree = Tree::new(vec![
+    ///                             "V0".to_string(), 
+    ///                             "V1".to_string(), 
+    ///                             "V2".to_string(), 
+    ///                             "V3".to_string()
+    ///                            ], 1);
+    /// 
+    pub fn new(inputs: Vec<String>, arity: usize) -> Tree { 
         // Calculates the height of the Tree
-        let length = data.len() / arity;
+        let length = inputs.len() / arity;
         let height_f = (length as f64).log2();
         let height = if height_f - height_f.floor() > 0.0 
                             {
@@ -28,15 +36,15 @@ impl Tree {
                             };
 
         // Applys arity to the input values
-        if (data.len() % arity) > 0 {
+        if (inputs.len() % arity) > 0 {
             panic!("not valide arity");
         }  
         let mut values = Vec::new();
-        let mut data_for_leafs = Vec::new();
+        let mut data = Vec::new();
         let mut current_arity = 0;
-        for input in (0..data.len()).step_by(arity) {
+        for input in (0..inputs.len()).step_by(arity) {
             while current_arity != arity {
-                let value = data.get(input + current_arity).unwrap();
+                let value = inputs.get(input + current_arity).unwrap();
                 let deref_value = value.clone();
                 values.push(deref_value);
                 current_arity += 1;
@@ -44,12 +52,12 @@ impl Tree {
             let concat_values = values.concat();
             values.clear();
             current_arity = 0;
-            data_for_leafs.push(concat_values);
+            data.push(concat_values);
         }
 
         // Generates leafs out of input data
         let mut leafs = Vec::new();
-        for input in data_for_leafs.clone() {
+        for input in data.clone() {
             let leaf = Node::create_leaf(input);
             leafs.push(leaf);
         }
@@ -71,13 +79,8 @@ impl Tree {
             nodes.insert(tree_level, level.clone());
             level.clear();
         }
-
-        // Gets the root value
-        let binding = nodes.clone();
-        let ref_root = &*binding.get(&0).unwrap();
-        let root = ref_root.first().unwrap().clone();
         
-        Tree { leafs, data, data_for_leafs , height, arity, nodes, root }
+        Tree { leafs, inputs, data , height, arity, nodes }
     }
 
     pub fn get_height(&self) -> usize {
@@ -88,6 +91,18 @@ impl Tree {
     }
 
     /// Get the string values of the leaf nodes
+    /// # Example
+    /// use merkletreelib::*;
+    /// let tree = Tree::new(vec![
+    ///                             "V0".to_string(), 
+    ///                             "V1".to_string(), 
+    ///                             "V2".to_string(), 
+    ///                             "V3".to_string()
+    ///                            ], 1);
+    /// let leafs = tree.get_leafs();
+    /// for leaf in leafs {
+    ///     println!("Leaf: {} \n", leaf);
+    /// }
     pub fn get_leafs(&self) -> Vec<String> {
         let leafs = self.leafs.clone();
         let mut leaf_string = Vec::new();
@@ -98,11 +113,37 @@ impl Tree {
         leaf_string
         
     }
+
+    /// Get the root value
+    /// # Example
+    /// use merkletreelib::*;
+    /// let tree = Tree::new(vec![
+    ///                             "V0".to_string(), 
+    ///                             "V1".to_string(), 
+    ///                             "V2".to_string(), 
+    ///                             "V3".to_string()
+    ///                            ], 1);
+    /// let root = tree.get_root();
     pub fn get_root(&self) -> String {
-        self.root.clone().get_string_value()
+        let binding = self.nodes.clone();
+        let ref_root = &*binding.get(&0).unwrap();
+        let root = ref_root.first().unwrap().clone();
+        root.get_string_value()
     }
 
     /// Get the string value of none leaf nodes
+    /// # Example
+    /// use merkletreelib::*;
+    /// let tree = Tree::new(vec![
+    ///                             "V0".to_string(), 
+    ///                             "V1".to_string(), 
+    ///                             "V2".to_string(), 
+    ///                             "V3".to_string()
+    ///                            ], 1);
+    /// let nodes = tree.get_nodes();
+    /// for node in nodes {
+    ///     println!("Node: {} \n", node);
+    /// }
     pub fn get_nodes(&self) -> Vec<String> {
         let get_nodes = self.nodes.clone();
         let mut nodes_string = Vec::new();
@@ -121,6 +162,15 @@ impl Tree {
 
 
     /// Get opening of a leaf at a provided index
+    /// # Example
+    /// use merkletreelib::*;
+    /// let tree = Tree::new(vec![
+    ///                             "V0".to_string(), 
+    ///                             "V1".to_string(), 
+    ///                             "V2".to_string(), 
+    ///                             "V3".to_string()
+    ///                            ], 1);
+    /// let opening = tree.get_opening(0);
     pub fn get_opening(&self, index_e: usize) -> Vec<Node> {
         let mut index = index_e;
         let mut level = self.height;
@@ -147,7 +197,16 @@ impl Tree {
         opening
     }
 
-    /// Get the index of a leaf by providing a input value 
+    /// Get the index of a leaf by providing a input value
+    /// # Example
+    /// use merkletreelib::*;
+    /// let tree = Tree::new(vec![
+    ///                             "V0".to_string(), 
+    ///                             "V1".to_string(), 
+    ///                             "V2".to_string(), 
+    ///                             "V3".to_string()
+    ///                            ], 1);
+    /// let leaf_index = tree.get_leaf_index_by_values("V2".to_string());
     pub fn get_leaf_index_by_values(&self, input: String) -> usize {
         let leaf_data = self.data.clone();
         let index = leaf_data.iter().position(|r| *r == input).unwrap();
@@ -156,8 +215,17 @@ impl Tree {
     }
 
     /// Get input value by providing a index value
+    /// # Example
+    /// use merkletreelib::*;
+    /// let tree = Tree::new(vec![
+    ///                             "V0".to_string(), 
+    ///                             "V1".to_string(), 
+    ///                             "V2".to_string(), 
+    ///                             "V3".to_string()
+    ///                            ], 1);
+    /// let leaf_values = tree.get_values_from_leaf(1);
     pub fn get_values_from_leaf(&self, index: usize) -> String {
-        let values = self.data.clone();
+        let values = self.inputs.clone();
         values.get(index).unwrap().clone()
     }
 }
