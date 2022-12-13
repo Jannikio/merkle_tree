@@ -1,4 +1,5 @@
 mod hasher;
+mod tests;
 pub use crate::hasher::Hasher;
 mod node;
 pub use crate::node::Node;

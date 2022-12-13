@@ -4,7 +4,6 @@ use super::*;
 
 #[derive(Debug)]
 pub struct Tree {
-    pub leafs: Vec<Node>,
     pub inputs: Vec<String>,
     pub data: Vec<String>,
     pub height: usize,
@@ -17,13 +16,13 @@ impl Tree {
     /// Creates a new Tree with given values
     /// # Example
     /// use merkletreelib::*;
-    /// let tree = Tree::new(vec![
-    ///                             "V0".to_string(), 
-    ///                             "V1".to_string(), 
-    ///                             "V2".to_string(), 
-    ///                             "V3".to_string()
-    ///                            ], 1);
-    /// 
+    /// let values = vec!["V0".to_string(), 
+    ///                   "V1".to_string(), 
+    ///                   "V2".to_string(), 
+    ///                   "V3".to_string()];
+    /// let tree = Tree::new(values, 1);
+    /// let test_root = "cbb27bd05042177bf759e4530b10438b1748d71014cf3fc68bca522d20d422b4"
+    /// assert_eq!(tree.get_root, test_root);
     pub fn new(inputs: Vec<String>, arity: usize) -> Tree { 
         // Calculates the height of the Tree
         let length = inputs.len() / arity;
@@ -63,7 +62,7 @@ impl Tree {
         }
         let mut nodes = BTreeMap::new();
         let mut tree_level = height.clone();
-        nodes.insert(tree_level, leafs.clone());
+        nodes.insert(tree_level, leafs);
         let mut level = Vec::new();
 
         // Creates the Tree
@@ -80,7 +79,7 @@ impl Tree {
             level.clear();
         }
         
-        Tree { leafs, inputs, data , height, arity, nodes }
+        Tree { inputs, data , height, arity, nodes }
     }
 
     pub fn get_height(&self) -> usize {
@@ -104,7 +103,9 @@ impl Tree {
     ///     println!("Leaf: {} \n", leaf);
     /// }
     pub fn get_leafs(&self) -> Vec<String> {
-        let leafs = self.leafs.clone();
+        let binding = self.nodes.clone();
+        let raw_leafs = binding.iter().next_back();
+        let leafs = raw_leafs.unwrap().1.clone();
         let mut leaf_string = Vec::new();
         for leaf in leafs {
             let string = leaf.string_hash;
@@ -207,6 +208,7 @@ impl Tree {
     ///                             "V3".to_string()
     ///                            ], 1);
     /// let leaf_index = tree.get_leaf_index_by_values("V2".to_string());
+    /// assert_eq!(leaf_index, 2);
     pub fn get_leaf_index_by_values(&self, input: String) -> usize {
         let leaf_data = self.data.clone();
         let index = leaf_data.iter().position(|r| *r == input).unwrap();
@@ -224,6 +226,7 @@ impl Tree {
     ///                             "V3".to_string()
     ///                            ], 1);
     /// let leaf_values = tree.get_values_from_leaf(1);
+    /// assert_eq!(leaf_values, "V1".to_string());
     pub fn get_values_from_leaf(&self, index: usize) -> String {
         let values = self.inputs.clone();
         values.get(index).unwrap().clone()
