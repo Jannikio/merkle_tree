@@ -2,14 +2,9 @@ use merkletreelib::*;
 
 fn main() {
 
+    
     // Generate a vector with 4104 values
-    let mut values = Vec::new();
-    let mut index = 0;
-    while index < 4104 {
-        let value = "V".to_string() + &index.to_string();
-        values.push(value);
-        index += 1;
-    }
+    let values = (0..4104).map(|v| "V".to_string() + &v.to_string()).collect();
     
     // Create a Tree with a height of 10 and a arity of 8
     let tree = Tree::new(values, 8);
