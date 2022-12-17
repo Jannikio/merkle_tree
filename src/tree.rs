@@ -44,7 +44,7 @@ impl Tree {
         for input in (0..inputs.len()).step_by(arity) {
             while current_arity != arity {
                 let value = inputs.get(input + current_arity).unwrap();
-                let deref_value = value.clone();
+                let deref_value = value.to_owned();
                 values.push(deref_value);
                 current_arity += 1;
             }
@@ -55,11 +55,8 @@ impl Tree {
         }
 
         // Generates leafs out of input data
-        let mut leafs = Vec::new();
-        for input in data.clone() {
-            let leaf = Node::create_leaf(input);
-            leafs.push(leaf);
-        }
+        let leafs: Vec<Node> = data.iter().map(|input| Node::create_leaf(input)).collect();
+
         let mut nodes = BTreeMap::new();
         let mut tree_level = height.clone();
         nodes.insert(tree_level, leafs);
@@ -71,7 +68,7 @@ impl Tree {
             for single_node in (0..current_level.len()).step_by(2) {
                 let left = current_level.get(single_node).unwrap();
                 let right = current_level.get(single_node + 1).unwrap_or(left);
-                let node = Node::create_none_leaf(left.clone(),  right.clone());
+                let node = Node::create_none_leaf(left, right);
                 level.push(node);
             };
             tree_level -= 1;
@@ -103,16 +100,9 @@ impl Tree {
     ///     println!("Leaf: {} \n", leaf);
     /// }
     pub fn get_leafs(&self) -> Vec<String> {
-        let binding = self.nodes.clone();
-        let raw_leafs = binding.iter().next_back();
-        let leafs = raw_leafs.unwrap().1.clone();
-        let mut leaf_string = Vec::new();
-        for leaf in leafs {
-            let string = leaf.string_hash;
-            leaf_string.push(string);
-        }
-        leaf_string
-        
+        let leafs = self.nodes.iter().next_back().unwrap().1;
+        let leaf_string: Vec<String> = leafs.iter().map(|leaf| leaf.string_hash.to_owned()).collect();
+        leaf_string  
     }
 
     /// Get the root value
@@ -126,9 +116,8 @@ impl Tree {
     ///                            ], 1);
     /// let root = tree.get_root();
     pub fn get_root(&self) -> String {
-        let binding = self.nodes.clone();
-        let ref_root = &*binding.get(&0).unwrap();
-        let root = ref_root.first().unwrap().clone();
+        let ref_root = &*self.nodes.get(&0).unwrap();
+        let root = ref_root.first().unwrap().to_owned();
         root.get_string_value()
     }
 
@@ -151,10 +140,7 @@ impl Tree {
         let mut level = self.height - 1;
         while level > 0 {
             let node = get_nodes.get(&level).unwrap();
-            for val in node {
-                let string = val.clone().string_hash;
-                nodes_string.push(string);
-            }
+            nodes_string = node.iter().map(|value| value.string_hash.to_owned()).collect();
             level -= 1;
         }
         nodes_string
