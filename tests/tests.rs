@@ -36,7 +36,7 @@ fn test_get_leafs() {
     let values = vec![
             "V0".to_string(), "V1".to_string(), "V2".to_string(), "V3".to_string()
             ];
-    let tree = Tree::new(values.clone(), 1);
+    let tree = Tree::new(values, 1);
     let leafs = tree.get_leafs();
     assert_eq!(leafs, test_leafs);
 }
@@ -47,7 +47,7 @@ fn test_get_root() {
     let values = vec![
         "V0".to_string(), "V1".to_string(), "V2".to_string(), "V3".to_string()
         ];
-    let tree = Tree::new(values.clone(), 1);
+    let tree = Tree::new(values, 1);
     let root = tree.get_root();
     let test_root = "cbb27bd05042177bf759e4530b10438b1748d71014cf3fc68bca522d20d422b4".to_string();
     assert_eq!(root, test_root);
@@ -59,7 +59,7 @@ fn test_get_nodes() {
     let values = vec![
         "V0".to_string(), "V1".to_string(), "V2".to_string(), "V3".to_string()
         ];
-    let tree = Tree::new(values.clone(), 1);
+    let tree = Tree::new(values, 1);
     let nodes = tree.get_nodes();
     let node0 = "732d279c9ffd8302dded1c291c7b623dd385b2e7241dd0c891fbaddb8033efff".to_string();
     let node1 = "62f142501512cf5a011dc3297d47315a5fb0bba09dc0044c418c2df37d8a51b7".to_string();
@@ -73,7 +73,7 @@ fn test_get_opening() {
     let values = vec![
         "V0".to_string(), "V1".to_string(), "V2".to_string(), "V3".to_string()
         ];
-    let tree = Tree::new(values.clone(), 1);
+    let tree = Tree::new(values, 1);
     let opening = tree.get_opening(1);
     let string_opening:Vec<String> = opening.iter().map(|opening| opening.clone().get_string_value()).collect();
     let test_value_1 = "bc946d74e8aee763e228fa42d6f4bcf3f164e54c769f806c3d22e544bbd8e424".to_string();
@@ -88,7 +88,7 @@ fn test_get_leaf_index_by_values() {
     let values = vec![
         "V0".to_string(), "V1".to_string(), "V2".to_string(), "V3".to_string()
         ];
-    let tree = Tree::new(values.clone(), 1);
+    let tree = Tree::new(values, 1);
     let index = tree.get_leaf_index_by_values("V2".to_string());
     assert_eq!(index, 2);
 }
@@ -99,7 +99,7 @@ fn test_get_values_from_leaf() {
     let values = vec![
         "V0".to_string(), "V1".to_string(), "V2".to_string(), "V3".to_string()
         ];
-    let tree = Tree::new(values.clone(), 1);
+    let tree = Tree::new(values, 1);
     let leaf_values = tree.get_values_from_leaf(1);
     assert_eq!(leaf_values, "V1".to_string());
 }
