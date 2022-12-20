@@ -6,7 +6,7 @@ pub struct  Node {
     string_hash: String
 }
 
-/// Creates a leaf or none leaf node
+// Creates a leaf or none leaf node
 impl Node {
 
     // Create leaf from string input
@@ -23,10 +23,10 @@ impl Node {
     // Create none leaf from input of two nodes
     pub fn create_none_leaf(left: &Node, right: &Node) -> Node
     {
-        let data1 = &left.hash;
-        let data2 = &right.hash;
+        let data_left = &left.hash;
+        let data_right = &right.hash;
         let mut hasher1 = Self::select_hasher("sha256");
-        let hash = Self::use_hasher_node(&mut *hasher1, data1, data2);
+        let hash = Self::use_hasher_node(&mut *hasher1, data_left, data_right);
         let string_hash = hex::encode(&hash);
         Node{ hash, string_hash }
     }
@@ -57,7 +57,7 @@ impl Node {
         }
     }
 
-    /// Get the string value of a leaf or none leaf node
+    // Get the string value of a leaf or none leaf node
     pub fn get_string_value(&self) -> String {
         self.string_hash.clone()
         
