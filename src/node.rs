@@ -2,7 +2,7 @@ use super::*;
 #[derive(Debug, Clone)]
 pub struct  Node {
     hash: Box<[u8]>,
-    pub string_hash: String
+    string_hash: String
 }
 
 /// Creates a leaf or none leaf node

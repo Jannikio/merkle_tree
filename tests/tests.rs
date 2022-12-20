@@ -1,7 +1,6 @@
 #![cfg(test)]
 
-
-use super::*;
+use merkletreelib::*;
 
 #[test]
 fn test_create_new_tree() {
@@ -10,10 +9,9 @@ fn test_create_new_tree() {
             ];
     let tree = Tree::new(values.clone(), 1);
     assert_eq!(values.len(), 4);
-    assert_eq!(tree.height, 2);
-    assert_eq!(tree.inputs, values);
-    assert_eq!(tree.data, values);
-    assert_eq!(tree.arity, 1);
+    assert_eq!(tree.get_height(), 2);
+    assert_eq!(tree.get_data(), values);
+    assert_eq!(tree.get_arity(), 1);
 }
 
 #[test]
@@ -23,10 +21,9 @@ fn test_create_new_tree_with_arity_2() {
             ];
     let tree = Tree::new(values.clone(), 2);
     let arity_values = vec!["V0V1".to_string(), "V2V3".to_string()];
-    assert_eq!(tree.height, 1);
-    assert_eq!(tree.inputs, values);
-    assert_eq!(tree.data, arity_values);
-    assert_eq!(tree.arity, 2);
+    assert_eq!(tree.get_height(), 1);
+    assert_eq!(tree.get_data(), arity_values);
+    assert_eq!(tree.get_arity(), 2);
 }
  
 #[test]
@@ -78,7 +75,7 @@ fn test_get_opening() {
         ];
     let tree = Tree::new(values.clone(), 1);
     let opening = tree.get_opening(1);
-    let string_opening:Vec<String> = opening.iter().map(|opening| opening.clone().string_hash).collect();
+    let string_opening:Vec<String> = opening.iter().map(|opening| opening.clone().get_string_value()).collect();
     let test_value_1 = "bc946d74e8aee763e228fa42d6f4bcf3f164e54c769f806c3d22e544bbd8e424".to_string();
     let test_value_2 = "62f142501512cf5a011dc3297d47315a5fb0bba09dc0044c418c2df37d8a51b7".to_string();
     let test_opening = vec![test_value_1, test_value_2];

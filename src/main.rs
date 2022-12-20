@@ -2,7 +2,6 @@ use merkletreelib::*;
 
 fn main() {
 
-    
     // Generate a vector with 4104 values
     let values = (0..4104).map(|v| "V".to_string() + &v.to_string()).collect();
     
