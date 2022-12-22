@@ -25,6 +25,15 @@ fn test_create_new_tree_with_arity_2() {
     assert_eq!(tree.get_data(), arity_values);
     assert_eq!(tree.get_arity(), 2);
 }
+
+#[test]
+fn test_create_new_tree_of_int() {
+    let values = vec![0,1,2,3];
+    let tree = Tree::new(values.clone(), 1);
+    assert_eq!(values.len(), 4);
+    assert_eq!(tree.get_height(), 2);
+    assert_eq!(tree.get_arity(), 1);
+}
  
 #[test]
 fn test_get_leafs() {
