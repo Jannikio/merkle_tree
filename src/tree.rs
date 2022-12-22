@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use super::*;
+use crate::node::Node;
 
 #[derive(Debug)]
 pub struct Tree {
@@ -18,7 +18,6 @@ impl Tree {
     /// let values = vec![
     ///         "V0".to_string(),"V1".to_string(), "V2".to_string(), "V3".to_string()
     ///          ];
-    /// let tree = Tree::new(values, 1);
     /// let tree = Tree::new(values, 1);
     /// let test_root = "cbb27bd05042177bf759e4530b10438b1748d71014cf3fc68bca522d20d422b4"
     /// assert_eq!(tree.get_root, test_root);
@@ -46,8 +45,8 @@ impl Tree {
         for input in (0..inputs.len()).step_by(arity) {
             while current_arity != arity {
                 let value = inputs.get(input + current_arity).unwrap();
-                let deref_value = value.to_string();
-                values.push(deref_value);
+                let string_value = value.to_string();
+                values.push(string_value);
                 current_arity += 1;
             }
             let concat_values = values.concat();
@@ -60,22 +59,22 @@ impl Tree {
         let leafs: Vec<Node> = data.iter().map(|input| Node::create_leaf(input)).collect();
 
         let mut nodes = BTreeMap::new();
-        let mut tree_level = height.clone();
-        nodes.insert(tree_level, leafs);
-        let mut level = Vec::new();
+        let mut tree_stage = height.clone();
+        nodes.insert(tree_stage, leafs);
+        let mut stage = Vec::new();
 
         // Creates the Tree
-        while tree_level > 0 {
-            let current_level = nodes.get(&tree_level).unwrap();
-            for single_node in (0..current_level.len()).step_by(2) {
-                let left = current_level.get(single_node).unwrap();
-                let right = current_level.get(single_node + 1).unwrap_or(left);
+        while tree_stage > 0 {
+            let current_stage = nodes.get(&tree_stage).unwrap();
+            for single_node in (0..current_stage.len()).step_by(2) {
+                let left = current_stage.get(single_node).unwrap();
+                let right = current_stage.get(single_node + 1).unwrap_or(left);
                 let node = Node::create_none_leaf(left, right);
-                level.push(node);
+                stage.push(node);
             };
-            tree_level -= 1;
-            nodes.insert(tree_level, level.clone());
-            level.clear();
+            tree_stage -= 1;
+            nodes.insert(tree_stage, stage.clone());
+            stage.clear();
         }
         
         Tree { data , height, arity, nodes }
@@ -166,11 +165,11 @@ impl Tree {
     pub fn get_nodes(&self) -> Vec<String> {
         let get_nodes = self.nodes.clone();
         let mut nodes_string = Vec::new();
-        let mut level = self.height - 1;
-        while level > 0 {
-            let node = get_nodes.get(&level).unwrap();
+        let mut stage = self.height - 1;
+        while stage > 0 {
+            let node = get_nodes.get(&stage).unwrap();
             nodes_string = node.iter().map(|value| value.get_string_value().to_owned()).collect();
-            level -= 1;
+            stage -= 1;
         }
         nodes_string
 
@@ -189,25 +188,25 @@ impl Tree {
     /// # Panics
     /// The function panics if the Leaf doesn't exists 
     pub fn get_opening(&self, mut index: usize) -> Vec<Node> {
-        let mut level = self.height;
+        let mut stage = self.height;
         let mut opening = Vec::new();
         if index > self.nodes.len() {
             panic!("Leaf doesn't exist");
         }
-        while level > 0 {
-            let nodes_opening = self.nodes.get(&level);
-            for nodes_level in nodes_opening {
+        while stage > 0 {
+            let nodes_opening = self.nodes.get(&stage);
+            for nodes_stage in nodes_opening {
                 if index % 2 == 0 {
-                    let value = nodes_level.get(index + 1).unwrap();
+                    let value = nodes_stage.get(index + 1).unwrap();
                     index /= 2;
                     opening.push(value.clone());
                 } else {
-                    let value = nodes_level.get(index - 1).unwrap();
+                    let value = nodes_stage.get(index - 1).unwrap();
                     index /= 2;
                     opening.push(value.clone());
                 } 
             }
-            level -= 1;
+            stage -= 1;
         }
         opening
     }
