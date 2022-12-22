@@ -22,7 +22,10 @@ impl Tree {
     /// let tree = Tree::new(values, 1);
     /// let test_root = "cbb27bd05042177bf759e4530b10438b1748d71014cf3fc68bca522d20d422b4"
     /// assert_eq!(tree.get_root, test_root);
-    pub fn new(inputs: Vec<String>, arity: usize) -> Tree { 
+    /// 
+    /// # Panics
+    /// The function panics if their are not enough values for the provided arity 
+    pub fn new <T: ToString> (inputs: Vec<T>, arity: usize) -> Tree { 
         // Calculates the height of the Tree
         let length = inputs.len() / arity;
         let height_f = (length as f64).log2();
@@ -33,9 +36,9 @@ impl Tree {
                                 height_f as usize
                             };
 
-        // Applys arity to the input values
+        // Applys arity to the input values 
         if (inputs.len() % arity) > 0 {
-            panic!("not valide arity");
+            panic!("Not enough values for the provided arity");
         }  
         let mut values = Vec::new();
         let mut data = Vec::new();
@@ -43,7 +46,7 @@ impl Tree {
         for input in (0..inputs.len()).step_by(arity) {
             while current_arity != arity {
                 let value = inputs.get(input + current_arity).unwrap();
-                let deref_value = value.to_owned();
+                let deref_value = value.to_string();
                 values.push(deref_value);
                 current_arity += 1;
             }
@@ -182,13 +185,16 @@ impl Tree {
     ///          ];
     /// let tree = Tree::new(values, 1);
     /// let opening = tree.get_opening(0);
+    /// 
+    /// # Panics
+    /// The function panics if the Leaf doesn't exists 
     pub fn get_opening(&self, index_e: usize) -> Vec<Node> {
         let mut index = index_e;
         let mut level = self.height;
         let mut opening = Vec::new();
         let nodes_len = self.nodes.len();
         if index_e > nodes_len  {
-            panic!("Not valid entry");
+            panic!("Leaf doesn't exist");
         }
         while level > 0 {
             let nodes_opening = self.nodes.get(&level);
