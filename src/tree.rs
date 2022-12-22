@@ -188,12 +188,10 @@ impl Tree {
     /// 
     /// # Panics
     /// The function panics if the Leaf doesn't exists 
-    pub fn get_opening(&self, index_e: usize) -> Vec<Node> {
-        let mut index = index_e;
+    pub fn get_opening(&self, mut index: usize) -> Vec<Node> {
         let mut level = self.height;
         let mut opening = Vec::new();
-        let nodes_len = self.nodes.len();
-        if index_e > nodes_len  {
+        if index > self.nodes.len() {
             panic!("Leaf doesn't exist");
         }
         while level > 0 {
